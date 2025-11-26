@@ -131,3 +131,54 @@ Your app is ready to be deployed!
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
 _This is an experiment showcasing the Live API, not an official Google product. We’ll do our best to support and maintain this experiment but your mileage may vary. We encourage open sourcing projects as a way of learning from each other. Please respect our and other creators' rights, including copyright and trademark rights when present, when sharing these works and creating derivative work. If you want more info on Google's policy, you can find that [here](https://developers.google.com/terms/site-policies)._
+
+## Deployment (GitHub Pages)
+
+This project is a Create React App (CRA) build and can be statically deployed. However, the Gemini API key is required only at runtime to establish a Live API websocket connection. Embedding the key into the built JavaScript bundle (via a secret in the workflow) will expose it publicly—anyone can view it in DevTools. Recommended approaches:
+
+### Option A (Recommended): Runtime Key Entry
+Prompt the user for their API key after the app loads and store it in `localStorage` or just memory. This keeps the repository & deployed artifact free of secrets. You would replace the compile-time line:
+
+```ts
+const API_KEY = process.env.REACT_APP_GEMINI_API_KEY as string;
+```
+
+with a runtime mechanism (input dialog / settings panel). Then pass the captured key into the `LiveAPIProvider` through `options={{ apiKey }}`. The current code will throw if the env var is missing; remove that guard when moving to runtime entry.
+
+### Option B: Build-Time Injection (Not Secure)
+Use a repo secret `REACT_APP_GEMINI_API_KEY` and reference it in the GitHub Actions workflow. This will work but the key is visible in the client bundle. Only do this if you are comfortable rotating the key and accept exposure risk.
+
+### GitHub Pages Workflow
+The repo includes `.github/workflows/deploy.yml` which:
+- Installs dependencies (`npm ci`)
+- Builds the app (`npm run build`)
+- Publishes the `build/` directory to GitHub Pages
+
+Ensure `package.json` has the `homepage` field set to:
+
+```json
+"homepage": "https://<your-username>.github.io/live-api-web-console"
+```
+
+### Enable Pages
+1. Push to `main`.
+2. In GitHub repo settings -> Pages: set Source to `GitHub Actions`.
+3. Wait for the workflow to finish; the URL will appear in the workflow summary.
+
+### Optional: Backend Proxy
+If you want to fully hide the API key, create a lightweight proxy (Cloud Run / FastAPI / Express) that holds the key server-side and forwards websocket traffic. For real-time Live API usage, a direct browser → Gemini Live connection is simplest; a proxy adds latency and complexity.
+
+### Quick Deployment Steps
+```bash
+git add .
+git commit -m "Add Pages deployment"
+git push origin main
+```
+
+Visit the Pages URL. If using runtime key collection, the UI should allow entering the key (implement an input component). After entering key, connect normally.
+
+### Security Summary
+- Never commit the API key.
+- Avoid embedding secrets in front-end bundles when possible.
+- Rotate keys periodically if you choose build-time injection.
+

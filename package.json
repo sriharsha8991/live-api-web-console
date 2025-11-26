@@ -1,6 +1,7 @@
 {
   "name": "multimodal-live-api-web-console",
   "version": "0.1.0",
+  "homepage": "https://sriharsha8991.github.io/live-api-web-console",
   "dependencies": {
     "@google/genai": "^0.14.0",
     "classnames": "^2.5.1",

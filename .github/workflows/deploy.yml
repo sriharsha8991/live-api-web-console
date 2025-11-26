@@ -1,0 +1,59 @@
+  name: Deploy to GitHub Pages
+
+  on:
+    push:
+      branches: [ main ]
+    workflow_dispatch:
+
+  permissions:
+    contents: read
+    pages: write
+    id-token: write
+
+  concurrency:
+    group: pages
+    cancel-in-progress: true
+
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v4
+
+        - name: Setup Node
+          uses: actions/setup-node@v4
+          with:
+            node-version: 20
+            cache: npm
+
+        - name: Install dependencies
+          run: npm ci
+
+        # IMPORTANT SECURITY NOTE:
+        # Do NOT inject the Gemini API key here – building a client-side bundle with the key will expose it publicly.
+        # Preferred pattern: prompt user for API key at runtime and keep it in localStorage / memory.
+        # If you MUST set at build time, create an environment 'GEMINI_API_KEY' and map to REACT_APP_GEMINI_API_KEY,
+        # understanding it will be visible in the browser dev tools.
+
+        - name: Build
+          env:
+            REACT_APP_GEMINI_API_KEY: ${{ secrets.REACT_APP_GEMINI_API_KEY }} # <-- Avoid unless you accept exposure
+            CI: false
+          run: npm run build
+
+        - name: Upload artifact
+          uses: actions/upload-pages-artifact@v3
+          with:
+            path: build
+
+    deploy:
+      environment:
+        name: github-pages
+        url: ${{ steps.deploy.outputs.page_url }}
+      runs-on: ubuntu-latest
+      needs: build
+      steps:
+        - name: Deploy to GitHub Pages
+          id: deploy
+          uses: actions/deploy-pages@v4
