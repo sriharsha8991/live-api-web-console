@@ -22,6 +22,7 @@ import {
   Modality,
   Type,
 } from "@google/genai";
+import "./altair-profile.scss";
 
 const declaration: FunctionDeclaration = {
   name: "render_altair",
@@ -38,6 +39,30 @@ const declaration: FunctionDeclaration = {
     required: ["json_graph"],
   },
 };
+
+// Profile Avatar Component - Add your photo URL here
+const PHOTO_URL = "/image.png"; // Add your photo URL here, e.g., "/profile.jpg" or "https://..."
+
+const ProfileAvatar = memo(() => (
+  <div className="profile-avatar">
+    {PHOTO_URL ? (
+      <img src={PHOTO_URL} alt="Sriharsha Velicheti" className="avatar-img" />
+    ) : (
+      <div className="avatar-initials">SV</div>
+    )}
+  </div>
+));
+
+// Minimalistic Profile Header
+const ProfileHeader = memo(() => (
+  <div className="profile-header">
+    <ProfileAvatar />
+    <div className="profile-info">
+      <h1 className="profile-name">Hi I'm Sriharsha Velicheti</h1>
+      <p className="profile-title">Generative AI Engineer · RAG Specialist</p>
+    </div>
+  </div>
+));
 
 function AltairComponent() {
   const [jsonString, setJSONString] = useState<string>("");
@@ -134,7 +159,17 @@ Answer any behavioural, diplomatic, or personal question with warmth, clarity, i
       vegaEmbed(embedRef.current, JSON.parse(jsonString));
     }
   }, [embedRef, jsonString]);
-  return <div className="vega-embed" ref={embedRef} />;
+  
+  return (
+    <div className="altair-interview-container">
+      <ProfileHeader />
+      <div className="interview-instruction">
+        <p>Ask me anything! 
+          <br></br>You can Click on the blue playbutton to start talking with me </p>
+      </div>
+      <div className="vega-embed" ref={embedRef} />
+    </div>
+  );
 }
 
 export const Altair = memo(AltairComponent);
