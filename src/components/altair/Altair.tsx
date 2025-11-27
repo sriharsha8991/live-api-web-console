@@ -41,17 +41,26 @@ const declaration: FunctionDeclaration = {
 };
 
 // Profile Avatar Component - Add your photo URL here
-const PHOTO_URL = "/image.png"; // Add your photo URL here, e.g., "/profile.jpg" or "https://..."
+const PHOTO_URL = `${process.env.PUBLIC_URL}/image.png`; // Uses PUBLIC_URL for proper path resolution
 
-const ProfileAvatar = memo(() => (
-  <div className="profile-avatar">
-    {PHOTO_URL ? (
-      <img src={PHOTO_URL} alt="Sriharsha Velicheti" className="avatar-img" />
-    ) : (
-      <div className="avatar-initials">SV</div>
-    )}
-  </div>
-));
+const ProfileAvatar = memo(() => {
+  const [imgError, setImgError] = useState(false);
+  
+  return (
+    <div className="profile-avatar">
+      {PHOTO_URL && !imgError ? (
+        <img 
+          src={PHOTO_URL} 
+          alt="Sriharsha Velicheti" 
+          className="avatar-img"
+          onError={() => setImgError(true)}
+        />
+      ) : (
+        <div className="avatar-initials">SV</div>
+      )}
+    </div>
+  );
+});
 
 // Minimalistic Profile Header
 const ProfileHeader = memo(() => (

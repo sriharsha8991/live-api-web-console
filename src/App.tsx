@@ -39,23 +39,35 @@ function App() {
   // either the screen capture, the video or null, if null we hide it
   const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
 
+  const hasVideo = videoRef.current && videoStream;
+
   return (
     <div className="App">
       <LiveAPIProvider options={apiOptions}>
         <div className="streaming-console">
           <SidePanel />
           <main>
-            <div className="main-app-area">
-              {/* APP goes here */}
-              <Altair />
-              <video
-                className={cn("stream", {
-                  hidden: !videoRef.current || !videoStream,
-                })}
-                ref={videoRef}
-                autoPlay
-                playsInline
-              />
+            <div className={cn("main-app-area", { "with-video": hasVideo })}>
+              {/* Profile section */}
+              <div className={cn("profile-section", { minimized: hasVideo })}>
+                <Altair />
+              </div>
+              
+              {/* Video container - only visible when streaming */}
+              <div className={cn("video-container", { active: hasVideo })}>
+                <video
+                  className="stream-video"
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                />
+                {hasVideo && (
+                  <div className="video-label">
+                    <span className="live-dot"></span>
+                    Live
+                  </div>
+                )}
+              </div>
             </div>
 
             <ControlTray

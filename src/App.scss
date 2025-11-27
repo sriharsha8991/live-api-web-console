@@ -153,6 +153,116 @@ body {
     flex: 1;
     align-items: center;
     justify-content: center;
+    width: 100%;
+    padding: 1rem;
+    gap: 1.5rem;
+    transition: all 0.4s ease;
+
+    /* Default: centered profile, no video */
+    &:not(.with-video) {
+      .profile-section {
+        max-width: 500px;
+        width: 100%;
+      }
+    }
+
+    /* With video: side-by-side layout */
+    &.with-video {
+      flex-direction: row;
+      align-items: stretch;
+
+      .profile-section {
+        flex: 0 0 320px;
+        max-width: 320px;
+      }
+    }
+  }
+
+  /* Profile section */
+  .profile-section {
+    background: var(--Neutral-10);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+
+    &.minimized {
+      .interview-instruction {
+        padding: 0.75rem 1rem;
+      }
+      .quick-steps {
+        display: none;
+      }
+      .profile-header {
+        padding: 1rem;
+      }
+      .profile-avatar {
+        width: 48px;
+        height: 48px;
+      }
+      .profile-name {
+        font-size: 1rem;
+      }
+      .profile-title {
+        font-size: 0.75rem;
+      }
+    }
+  }
+
+  /* Video container */
+  .video-container {
+    flex: 1;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: var(--Neutral-5);
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    min-height: 300px;
+    max-height: 70vh;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+    transition: all 0.4s ease;
+
+    &.active {
+      display: flex;
+    }
+
+    .stream-video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 12px;
+    }
+
+    .video-label {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      color: var(--Neutral-80);
+      font-weight: 500;
+      backdrop-filter: blur(8px);
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--Red-500);
+      border-radius: 50%;
+      animation: pulse-dot 1.5s ease-in-out infinite;
+    }
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.1); }
   }
 
   .function-call {
@@ -164,7 +274,27 @@ body {
   }
 }
 
-/* video player */
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .streaming-console {
+    .main-app-area.with-video {
+      flex-direction: column;
+
+      .profile-section {
+        flex: 0 0 auto;
+        max-width: 100%;
+        width: 100%;
+      }
+
+      .video-container {
+        width: 100%;
+        min-height: 200px;
+      }
+    }
+  }
+}
+
+/* video player - legacy, keeping for fallback */
 .stream {
   flex-grow: 1;
   max-width: 90%;
