@@ -72,11 +72,43 @@ function ControlTray({
   const [inVolume, setInVolume] = useState(0);
   const [audioRecorder] = useState(() => new AudioRecorder());
   const [muted, setMuted] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const recordingTimerRef = useRef<number | null>(null);
   const renderCanvasRef = useRef<HTMLCanvasElement>(null);
   const connectButtonRef = useRef<HTMLButtonElement>(null);
 
+  const MAX_RECORDING_SECONDS = 90;
+
   const { client, connected, connect, disconnect, volume } =
     useLiveAPIContext();
+
+  // Recording timer - auto-mute after 30 seconds
+  useEffect(() => {
+    if (connected && !muted) {
+      setRecordingTime(0);
+      recordingTimerRef.current = window.setInterval(() => {
+        setRecordingTime((prev) => {
+          const newTime = prev + 1;
+          if (newTime >= MAX_RECORDING_SECONDS) {
+            setMuted(true);
+            return 0;
+          }
+          return newTime;
+        });
+      }, 1000);
+    } else {
+      if (recordingTimerRef.current) {
+        clearInterval(recordingTimerRef.current);
+        recordingTimerRef.current = null;
+      }
+      setRecordingTime(0);
+    }
+    return () => {
+      if (recordingTimerRef.current) {
+        clearInterval(recordingTimerRef.current);
+      }
+    };
+  }, [connected, muted]);
 
   useEffect(() => {
     if (!connected && connectButtonRef.current) {
@@ -173,6 +205,16 @@ function ControlTray({
             <span className="material-symbols-outlined filled">mic_off</span>
           )}
         </button>
+        {connected && !muted && (
+          <span className="recording-timer" style={{
+            fontSize: '12px',
+            color: recordingTime >= 25 ? '#ff6b6b' : '#888',
+            minWidth: '40px',
+            textAlign: 'center'
+          }}>
+            {MAX_RECORDING_SECONDS - recordingTime}s
+          </span>
+        )}
 
         <div className="action-button no-action outlined">
           <AudioPulse volume={volume} active={connected} hover={false} />

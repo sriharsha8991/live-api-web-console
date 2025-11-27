@@ -87,6 +87,25 @@
   font-weight: 400;
 }
 
+.quick-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  display: inline-block;
+}
+
+.quick-steps li {
+  color: var(--Neutral-50);
+  font-size: 0.8rem;
+  margin: 0.4rem 0;
+  line-height: 1.4;
+}
+
+.quick-steps strong {
+  color: var(--Neutral-70);
+}
+
 /* Vega Embed */
 .vega-embed {
   flex: 1;

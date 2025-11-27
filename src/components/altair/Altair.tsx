@@ -181,8 +181,12 @@ function AltairComponent() {
     <div className="altair-interview-container">
       <ProfileHeader />
       <div className="interview-instruction">
-        <p>Ask me anything!
-          <br></br>Click on the blue play button to start talking with me</p>
+        <p style={{ marginBottom: '0.75rem' }}>Ask me anything!</p>
+        <ul className="quick-steps">
+          <li>🔵 Click the <strong>blue play button</strong> to connect</li>
+          <li>🎤 <strong>Speak</strong> (90s max) or <strong>type</strong> in the chat — I'll respond with voice</li>
+          <li>📹 Turn on your <strong>camera</strong> for live video interaction</li>
+        </ul>
       </div>
       <div className="vega-embed" ref={embedRef} />
     </div>
